@@ -1,11 +1,4 @@
-import type { User, ProgressData } from './types';
-
-export const MOCK_USER: User = {
-  id: 'guest',
-  name: 'Minh Khôi',
-  email: 'guest@example.com',
-  avatarUrl: `https://i.pravatar.cc/150?u=minhkhoi`,
-};
+import type { ProgressData } from './types';
 
 export const MOCK_PROGRESS_DATA: ProgressData[] = [
     { name: 'Tuần 1', 'Điểm': 6.5 },
