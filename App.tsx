@@ -14,6 +14,25 @@ import type { ViewType, User } from './types';
 
 declare const google: any;
 
+// Helper function to correctly decode JWT payloads with UTF-8 characters
+const decodeJwtResponse = (token: string): any => {
+    try {
+        const base64Url = token.split('.')[1];
+        if (!base64Url) return null;
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error("Failed to decode JWT", e);
+        return null;
+    }
+}
+
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [user, setUser] = useState<User | null>(null);
@@ -64,7 +83,13 @@ const App: React.FC = () => {
 
   const handleGoogleSignIn = useCallback((credentialResponse: any) => {
     try {
-      const decoded = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
+      // FIX: Use a robust JWT decoding function that correctly handles UTF-8 characters.
+      // This resolves the character encoding issue (mojibake) for Vietnamese names.
+      const decoded = decodeJwtResponse(credentialResponse.credential);
+      if (!decoded) {
+          throw new Error("Failed to decode credential response.");
+      }
+      
       const newUser: User = {
         id: decoded.sub,
         name: decoded.name,
@@ -79,7 +104,7 @@ const App: React.FC = () => {
         setPendingAction(null);
       }
     } catch (e) {
-      console.error("Error decoding JWT", e);
+      console.error("Error processing Google sign-in", e);
     }
   }, [setPendingAction, setUser]);
 
