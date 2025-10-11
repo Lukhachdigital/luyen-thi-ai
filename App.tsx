@@ -16,16 +16,39 @@ import type { ViewType, User } from './types';
 declare const google: any;
 
 // A robust, standard-compliant function to decode JWT payloads.
-// This method correctly handles UTF-8 characters (like Vietnamese names)
-// by converting the base64 string to a percent-encoded string, which is
-// then reliably decoded by the browser's native `decodeURIComponent`.
-// This definitively solves the character encoding (mojibake) issue.
+// This is the definitive fix for the character encoding (mojibake) issue.
+// The root cause was that JWTs use Base64URL encoding, which omits padding characters ('=').
+// The browser's atob() function requires this padding. This function restores the
+// padding before decoding, ensuring the UTF-8 characters (like Vietnamese names)
+// are processed correctly.
 const decodeJwtResponse = (token: string): any => {
     try {
         const base64Url = token.split('.')[1];
-        if (!base64Url) return null;
+        if (!base64Url) {
+            console.error("Invalid JWT: No payload");
+            return null;
+        }
 
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        // 1. Replace URL-safe characters with standard Base64 characters
+        let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        
+        // 2. Add padding back that was removed from Base64URL encoding
+        switch (base64.length % 4) {
+            case 0:
+                // No padding needed
+                break;
+            case 2:
+                base64 += '==';
+                break;
+            case 3:
+                base64 += '=';
+                break;
+            default:
+                throw new Error('Illegal base64url string!');
+        }
+
+        // 3. Decode the now-valid Base64 string, then decode the resulting
+        // binary string as a URI component to handle UTF-8 characters.
         const jsonPayload = decodeURIComponent(
             atob(base64)
                 .split('')
@@ -41,6 +64,7 @@ const decodeJwtResponse = (token: string): any => {
         return null;
     }
 }
+
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
@@ -92,8 +116,7 @@ const App: React.FC = () => {
 
   const handleGoogleSignIn = useCallback((credentialResponse: any) => {
     try {
-      // FIX: Use a robust JWT decoding function that correctly handles UTF-8 characters.
-      // This resolves the character encoding issue (mojibake) for Vietnamese names.
+      // FIX: Use the definitive JWT decoding function that handles Base64URL padding.
       const decoded = decodeJwtResponse(credentialResponse.credential);
       if (!decoded) {
           throw new Error("Failed to decode credential response.");
