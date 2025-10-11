@@ -58,6 +58,7 @@ const decodeJwtResponse = (token: string): any => {
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -183,6 +184,9 @@ const App: React.FC = () => {
   }, [user, apiKey]);
 
   const handleSetView = (view: ViewType) => {
+    if (view !== 'mock-test') {
+        setSelectedSubject(null); // Clear subject when navigating away from the test view
+    }
     const protectedViews: ViewType[] = ['mock-test', 'chatbot', 'planner'];
     if (protectedViews.includes(view)) {
       requireAuthAndApi(() => setCurrentView(view));
@@ -191,12 +195,19 @@ const App: React.FC = () => {
     }
   };
 
+  const handleStartTest = (subject: string) => {
+    requireAuthAndApi(() => {
+        setSelectedSubject(subject);
+        setCurrentView('mock-test');
+    });
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard setView={handleSetView} />;
+        return <Dashboard onStartTest={handleStartTest} />;
       case 'mock-test':
-        return <MockTest />;
+        return <MockTest subject={selectedSubject} />;
       case 'chatbot':
         return <AIChatbot />;
       case 'planner':
@@ -204,7 +215,7 @@ const App: React.FC = () => {
       case 'community':
         return <Community />;
       default:
-        return <Dashboard setView={handleSetView} />;
+        return <Dashboard onStartTest={handleStartTest} />;
     }
   };
 
