@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [user, setUser] = useState<User | null>(null);
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
@@ -27,20 +28,22 @@ const App: React.FC = () => {
 
   // Effect to load persisted user and API key from localStorage on initial load
   useEffect(() => {
-    const savedUserJson = localStorage.getItem('app-user');
-    if (savedUserJson) {
-      try {
-        setUser(JSON.parse(savedUserJson));
-      } catch {
-        console.error("Failed to parse user from localStorage.");
-        localStorage.removeItem('app-user');
-      }
-    }
+    try {
+        const savedUserJson = localStorage.getItem('app-user');
+        if (savedUserJson) {
+            setUser(JSON.parse(savedUserJson));
+        }
 
-    const savedApiKey = localStorage.getItem('gemini-api-key');
-    if (savedApiKey) {
-      setApiKey(savedApiKey);
-      initializeAi(savedApiKey);
+        const savedApiKey = localStorage.getItem('gemini-api-key');
+        if (savedApiKey) {
+            setApiKey(savedApiKey);
+            initializeAi(savedApiKey);
+        }
+    } catch (error) {
+        console.error("Failed to parse data from localStorage.", error);
+        localStorage.removeItem('app-user'); // Clear potentially corrupted user data
+    } finally {
+        setIsLoading(false);
     }
   }, []);
 
@@ -162,6 +165,14 @@ const App: React.FC = () => {
     setShowApiKeyModal(false);
     setPendingAction(null);
     setCurrentView('dashboard');
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   return (
