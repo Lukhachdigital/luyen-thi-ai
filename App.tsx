@@ -7,6 +7,7 @@ import { StudyPlanner } from './components/StudyPlanner';
 import { Community } from './components/Community';
 import { Header } from './components/Header';
 import { HeaderSkeleton } from './components/HeaderSkeleton';
+import { DashboardSkeleton } from './components/DashboardSkeleton';
 import { ApiKeyModal } from './components/ApiKeyModal';
 import { LoginModal } from './components/LoginModal';
 import { initializeAi } from './services/geminiService';
@@ -174,8 +175,8 @@ const App: React.FC = () => {
         <Sidebar currentView={'dashboard'} setView={() => {}} />
         <div className="flex-1 flex flex-col overflow-hidden">
           <HeaderSkeleton />
-          <main className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 md:p-8">
+            <DashboardSkeleton />
           </main>
         </div>
       </div>
