@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 
 const MOCK_POSTS = [
     { id: 1, author: 'Trần Văn An', avatar: 'https://picsum.photos/200/200?random=1', title: 'Mẹo giải nhanh bài toán hình học không gian?', subject: 'Toán', replies: 12, time: '2 giờ trước' },
@@ -41,24 +41,87 @@ const PostCard: React.FC<typeof MOCK_POSTS[0]> = ({ author, avatar, title, subje
     </div>
 );
 
-export const Community: React.FC = () => {
-    return (
-        <div className="max-w-4xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold">Cộng đồng học tập</h2>
-                <button className="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                    </svg>
-                    Tạo bài viết mới
-                </button>
-            </div>
+const NewPostModal: React.FC<{ onClose: () => void; onSubmit: (post: { title: string; content: string }) => void; }> = ({ onClose, onSubmit }) => {
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
 
-            <div className="space-y-4">
-                {MOCK_POSTS.map(post => (
-                    <PostCard key={post.id} {...post} />
-                ))}
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (title.trim() && content.trim()) {
+            onSubmit({ title, content });
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" aria-modal="true" role="dialog">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg transform transition-all">
+                <form onSubmit={handleSubmit} className="p-6">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Tạo bài viết mới</h3>
+                    <div className="space-y-4">
+                        <input
+                            type="text"
+                            placeholder="Tiêu đề"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                            aria-label="Post Title"
+                        />
+                        <textarea
+                            placeholder="Nội dung bài viết..."
+                            rows={6}
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                             aria-label="Post Content"
+                        />
+                    </div>
+                    <div className="mt-6 flex justify-end gap-3">
+                        <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">Hủy</button>
+                        <button type="submit" className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50" disabled={!title.trim() || !content.trim()}>Đăng bài</button>
+                    </div>
+                </form>
             </div>
         </div>
+    );
+};
+
+export const Community: React.FC = () => {
+    const [showNewPostModal, setShowNewPostModal] = useState(false);
+
+    const handleNewPostSubmit = (post: { title: string; content: string }) => {
+        console.log('New Post Submitted:', post);
+        // In a real app, you would send this to a server and update the posts list.
+        alert(`Bài viết "${post.title}" đã được tạo (xem console để biết chi tiết).`);
+        setShowNewPostModal(false);
+    };
+    
+    return (
+        <>
+            {showNewPostModal && (
+                <NewPostModal
+                    onClose={() => setShowNewPostModal(false)}
+                    onSubmit={handleNewPostSubmit}
+                />
+            )}
+            <div className="max-w-4xl mx-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-3xl font-bold">Cộng đồng học tập</h2>
+                    <button onClick={() => setShowNewPostModal(true)} className="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                        </svg>
+                        Tạo bài viết mới
+                    </button>
+                </div>
+
+                <div className="space-y-4">
+                    {MOCK_POSTS.map(post => (
+                        <PostCard key={post.id} {...post} />
+                    ))}
+                </div>
+            </div>
+        </>
     );
 };
