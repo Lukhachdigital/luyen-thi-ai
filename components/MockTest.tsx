@@ -19,6 +19,14 @@ const ALL_MOCK_QUESTIONS: Record<string, MockQuestion[]> = {
     'Vật lí': [
         { id: 1, question: "Đơn vị của lực trong hệ SI là gì?", options: ["Joule (J)", "Watt (W)", "Pascal (Pa)", "Newton (N)"], answer: "Newton (N)", explanation: "Newton (N) là đơn vị đo lực trong Hệ đo lường quốc tế (SI)." }
     ],
+    'Tin học': [
+        { id: 1, question: "Đâu là một hệ điều hành máy tính phổ biến?", options: ["Microsoft Word", "Google Chrome", "Windows 10", "Adobe Photoshop"], answer: "Windows 10", explanation: "Windows 10 là một hệ điều hành được phát triển bởi Microsoft. Các lựa chọn khác là phần mềm ứng dụng." },
+        { id: 2, question: "HTML là viết tắt của cụm từ nào?", options: ["Hyper Text Markup Language", "High Tech Modern Language", "Hyperlink and Text Markup Language", "Home Tool Markup Language"], answer: "Hyper Text Markup Language", explanation: "HTML là ngôn ngữ đánh dấu siêu văn bản, được sử dụng để tạo các trang web." },
+    ],
+    'Tiếng Pháp': [
+        { id: 1, question: "'Bonjour' có nghĩa là gì trong tiếng Việt?", options: ["Tạm biệt", "Xin chào", "Cảm ơn", "Xin lỗi"], answer: "Xin chào", explanation: "'Bonjour' là một lời chào phổ biến trong tiếng Pháp, thường được sử dụng vào ban ngày." },
+        { id: 2, question: "Thủ đô của nước Pháp là gì?", options: ["Marseille", "Lyon", "Nice", "Paris"], answer: "Paris", explanation: "Paris là thủ đô và là thành phố lớn nhất của Pháp." },
+    ],
 };
 
 interface MockTestProps {
