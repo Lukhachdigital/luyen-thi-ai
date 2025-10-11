@@ -115,13 +115,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ onStartTest }) => {
         { name: 'Sinh học', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L12 15l5.571-3M6.429 9.75L12 6.75l5.571 3" /></svg>, gradient: 'bg-gradient-to-br from-teal-500 to-teal-600' },
         { name: 'Lịch sử', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, gradient: 'bg-gradient-to-br from-orange-500 to-orange-600' },
         { name: 'Địa lí', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 21V3m0 0l-4 4M9 3l4 4M15 21V3m0 0l-4 4m4-4l4 4" /></svg>, gradient: 'bg-gradient-to-br from-cyan-500 to-cyan-600' },
+        { name: 'Tin học', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25" /></svg>, gradient: 'bg-gradient-to-br from-gray-700 to-gray-800' },
+        { name: 'Tiếng Pháp', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, gradient: 'bg-gradient-to-br from-indigo-500 to-indigo-600' },
     ];
 
     return (
         <div className="space-y-6">
             <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Chọn môn để luyện thi</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
                     {subjects.map(subject => (
                         <SubjectCard
                             key={subject.name}
