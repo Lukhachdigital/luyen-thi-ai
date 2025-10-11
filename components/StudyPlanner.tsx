@@ -41,8 +41,9 @@ const SimpleMarkdown: React.FC<{ text: string }> = ({ text }) => {
             acc.push(el);
         }
         return acc;
-    // FIX: Replaced JSX.Element[] with React.ReactElement[] to resolve JSX namespace error.
-    }, [] as React.ReactElement[]);
+    // FIX: To fix errors with accessing props and cloning elements, the accumulator type is made more specific.
+    // This ensures TypeScript knows about the `children` prop.
+    }, [] as React.ReactElement<{ children?: React.ReactNode }>[]);
 
     return <>{content}</>;
 };
