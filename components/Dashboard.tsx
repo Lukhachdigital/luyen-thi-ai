@@ -19,17 +19,23 @@ const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode }
     </div>
 );
 
-const ActionCard: React.FC<{ title: string; description: string; icon: React.ReactNode; onClick: () => void; gradient: string; }> = ({ title, description, icon, onClick, gradient }) => (
+const SubjectCard: React.FC<{
+  subject: string;
+  icon: React.ReactNode;
+  gradient: string;
+  onClick: () => void;
+}> = ({ subject, icon, gradient, onClick }) => (
     <button onClick={onClick} className={`relative p-6 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all text-left w-full group text-white overflow-hidden ${gradient}`}>
         <div className="relative z-10">
             <div className="mb-4">
                 {icon}
             </div>
-            <p className="font-bold text-xl">{title}</p>
-            <p className="text-sm opacity-80">{description}</p>
+            <p className="font-bold text-xl">{subject}</p>
+            <p className="text-sm opacity-80">Luyện đề thi ngay</p>
         </div>
     </button>
 );
+
 
 const ExamForecastCard: React.FC = () => {
     const percentage = 85;
@@ -97,14 +103,34 @@ const SuggestionsCard: React.FC = () => {
 
 export const Dashboard: React.FC<DashboardProps> = ({ setView }) => {
     const statIconClasses = "h-6 w-6 text-blue-600 dark:text-blue-400";
-    const actionIconClasses = "h-10 w-10 mb-4 opacity-80";
+    const subjectIconClasses = "h-10 w-10 opacity-80";
+
+    const subjects = [
+        { name: 'Toán', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>, gradient: 'bg-gradient-to-br from-blue-500 to-blue-600' },
+        { name: 'Ngữ văn', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>, gradient: 'bg-gradient-to-br from-red-500 to-red-600' },
+        { name: 'Tiếng Anh', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5h12M9 3v2m4 0h6M17 3v2M4 21h16a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1v13a1 1 0 001 1z" /></svg>, gradient: 'bg-gradient-to-br from-green-500 to-green-600' },
+        { name: 'Vật lí', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 3.104v5.714a2.25 2.25 0 01-.5 1.591L5.22 15.5h13.56l-4.03-5.091a2.25 2.25 0 01-.5-1.591V3.104a2.25 2.25 0 00-3.262-2.121L12 2.1l-1.238-.817A2.25 2.25 0 009.75 3.104zM12 15.5h.01" /></svg>, gradient: 'bg-gradient-to-br from-yellow-500 to-yellow-600' },
+        { name: 'Hoá học', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.25 5.25a3 3 0 013 3v10.5a3 3 0 01-3 3h-4.5a3 3 0 01-3-3V8.25a3 3 0 013-3h4.5z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.25 8.25h-4.5" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15.75h.008v.008H12v-.008z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 16.5A.75.75 0 013 15.75V9a.75.75 0 01.75-.75h1.5a.75.75 0 01.75.75v6.75a.75.75 0 01-.75.75h-1.5z" /></svg>, gradient: 'bg-gradient-to-br from-purple-500 to-purple-600' },
+        { name: 'Sinh học', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L12 15l5.571-3M6.429 9.75L12 6.75l5.571 3" /></svg>, gradient: 'bg-gradient-to-br from-teal-500 to-teal-600' },
+        { name: 'Lịch sử', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, gradient: 'bg-gradient-to-br from-orange-500 to-orange-600' },
+        { name: 'Địa lí', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 21V3m0 0l-4 4M9 3l4 4M15 21V3m0 0l-4 4m4-4l4 4" /></svg>, gradient: 'bg-gradient-to-br from-cyan-500 to-cyan-600' },
+    ];
 
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <ActionCard title="Luyện đề thi thử" description="Bắt đầu một bài thi thử mới" icon={<svg xmlns="http://www.w3.org/2000/svg" className={actionIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>} onClick={() => setView('mock-test')} gradient="bg-gradient-to-br from-blue-500 to-blue-600" />
-                <ActionCard title="Tạo kế hoạch học tập" description="Lên lịch trình ôn luyện với AI" icon={<svg xmlns="http://www.w3.org/2000/svg" className={actionIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18M12 12.75h.008v.008H12v-.008z" /></svg>} onClick={() => setView('planner')} gradient="bg-gradient-to-br from-indigo-500 to-indigo-600" />
-                <ActionCard title="Hỏi đáp AI" description="Giải đáp thắc mắc ngay lập tức" icon={<svg xmlns="http://www.w3.org/2000/svg" className={actionIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>} onClick={() => setView('chatbot')} gradient="bg-gradient-to-br from-purple-500 to-purple-600" />
+            <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Chọn môn để luyện thi</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    {subjects.map(subject => (
+                        <SubjectCard
+                            key={subject.name}
+                            subject={subject.name}
+                            icon={subject.icon}
+                            gradient={subject.gradient}
+                            onClick={() => setView('mock-test')}
+                        />
+                    ))}
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-6 space-y-6 lg:space-y-0">
