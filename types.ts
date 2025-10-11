@@ -1,4 +1,4 @@
-export type ViewType = 'dashboard' | 'mock-test' | 'chatbot' | 'planner' | 'community';
+export type ViewType = 'dashboard' | 'mock-test' | 'chatbot' | 'planner' | 'community' | 'knowledge-base';
 
 export interface User {
   id: string;
