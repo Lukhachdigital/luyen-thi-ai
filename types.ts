@@ -1,32 +1,27 @@
-
-export type ViewType = 'dashboard' | 'mock-test' | 'chatbot' | 'planner' | 'community' | 'settings';
+export type ViewType = 'dashboard' | 'mock-test' | 'chatbot' | 'planner' | 'community';
 
 export interface User {
-    name: string;
-    avatarUrl: string;
-}
-
-export interface ProgressData {
-    month: string;
-    Toán: number;
-    'Ngữ văn': number;
-    'Tiếng Anh': number;
-}
-
-export interface Question {
-    question: string;
-    options: string[];
-    correctAnswer: string;
-    explanation: string;
-}
-
-export interface MockTestResult {
-    score: number;
-    total: number;
-    answers: { question: Question; userAnswer: string }[];
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string;
 }
 
 export interface ChatMessage {
-    sender: 'user' | 'ai';
-    text: string;
+  sender: 'user' | 'ai';
+  text: string;
+}
+
+export interface MockQuestion {
+  id: number;
+  question: string;
+  options: string[];
+  answer: string;
+  explanation: string;
+  userAnswer?: string;
+}
+
+export interface ProgressData {
+  name: string;
+  'Điểm': number;
 }

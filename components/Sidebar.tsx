@@ -39,8 +39,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setView }) => {
 
   return (
     <div className="hidden md:flex flex-col w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
-      <div className="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700">
-         <span className="text-xl font-bold text-blue-600 dark:text-blue-400">LUYỆN THI AI</span>
+      <div className="flex items-center justify-center h-20 border-b border-gray-200 dark:border-gray-700 px-4 text-center">
+         <div className="font-bold text-blue-600 dark:text-blue-400">
+            <span className="block text-xl uppercase tracking-wide">ỨNG DỤNG AI</span>
+            <span className="block text-xs uppercase tracking-wider">HỖ TRỢ ÔN THI VÀO LỚP 10</span>
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto">
         <nav className="p-4">
