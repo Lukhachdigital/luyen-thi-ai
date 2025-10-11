@@ -6,6 +6,7 @@ import { AIChatbot } from './components/AIChatbot';
 import { StudyPlanner } from './components/StudyPlanner';
 import { Community } from './components/Community';
 import { Header } from './components/Header';
+import { HeaderSkeleton } from './components/HeaderSkeleton';
 import { ApiKeyModal } from './components/ApiKeyModal';
 import { LoginModal } from './components/LoginModal';
 import { initializeAi } from './services/geminiService';
@@ -169,8 +170,14 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans">
+        <Sidebar currentView={'dashboard'} setView={() => {}} />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <HeaderSkeleton />
+          <main className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+          </main>
+        </div>
       </div>
     );
   }
