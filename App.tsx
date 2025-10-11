@@ -12,6 +12,7 @@ import { ApiKeyModal } from './components/ApiKeyModal';
 import { LoginModal } from './components/LoginModal';
 import { initializeAi } from './services/geminiService';
 import type { ViewType, User } from './types';
+import { KnowledgeBase } from './components/KnowledgeBase';
 
 declare const google: any;
 
@@ -184,10 +185,10 @@ const App: React.FC = () => {
   }, [user, apiKey]);
 
   const handleSetView = (view: ViewType) => {
-    if (view !== 'mock-test') {
-        setSelectedSubject(null); // Clear subject when navigating away from the test view
+    if (view !== 'mock-test' && view !== 'knowledge-base') {
+        setSelectedSubject(null); // Clear subject when navigating away
     }
-    const protectedViews: ViewType[] = ['mock-test', 'chatbot', 'planner'];
+    const protectedViews: ViewType[] = ['mock-test', 'chatbot', 'planner', 'knowledge-base'];
     if (protectedViews.includes(view)) {
       requireAuthAndApi(() => setCurrentView(view));
     } else {
@@ -202,12 +203,21 @@ const App: React.FC = () => {
     });
   };
 
+  const handleViewKnowledge = (subject: string) => {
+    requireAuthAndApi(() => {
+        setSelectedSubject(subject);
+        setCurrentView('knowledge-base');
+    });
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard onStartTest={handleStartTest} />;
+        return <Dashboard onStartTest={handleStartTest} onViewKnowledge={handleViewKnowledge} />;
       case 'mock-test':
         return <MockTest subject={selectedSubject} />;
+      case 'knowledge-base':
+        return <KnowledgeBase subject={selectedSubject} />;
       case 'chatbot':
         return <AIChatbot />;
       case 'planner':
@@ -215,7 +225,7 @@ const App: React.FC = () => {
       case 'community':
         return <Community />;
       default:
-        return <Dashboard onStartTest={handleStartTest} />;
+        return <Dashboard onStartTest={handleStartTest} onViewKnowledge={handleViewKnowledge} />;
     }
   };
 
