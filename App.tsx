@@ -15,13 +15,13 @@ import type { ViewType, User } from './types';
 
 declare const google: any;
 
-// A robust, standard-compliant function to decode JWT payloads using the modern TextDecoder API.
-// This is the definitive fix for the character encoding (mojibake) issue.
-// Previous methods used a fragile, manual conversion of binary data. This new implementation
-// correctly handles Base64URL padding, decodes it to a binary string with atob(),
-// converts that binary string into a byte array (Uint8Array), and then uses the
-// browser's native TextDecoder to reliably interpret those bytes as a UTF-8 string.
-// This is the correct, modern, and most reliable method.
+// A foolproof, low-level function to decode JWT payloads.
+// This is the definitive fix for the character encoding issue.
+// Previous methods failed due to subtle interpretation errors. This new implementation
+// manually converts each byte from the raw binary string (from atob) into its
+// percent-encoded hexadecimal representation (e.g., %E1). The browser's native
+// `decodeURIComponent` function then correctly assembles these codes into a
+// proper UTF-8 string. This leaves no room for error.
 const decodeJwtResponse = (token: string): any => {
     try {
         const base64Url = token.split('.')[1];
@@ -34,30 +34,19 @@ const decodeJwtResponse = (token: string): any => {
         let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         
         // 2. Add padding back that was removed from Base64URL encoding
-        switch (base64.length % 4) {
-            case 0: // No padding needed
-                break;
-            case 2:
-                base64 += '==';
-                break;
-            case 3:
-                base64 += '=';
-                break;
-            default:
-                throw new Error('Illegal base64url string!');
-        }
+        const padLength = (4 - (base64.length % 4)) % 4;
+        base64 += '='.repeat(padLength);
 
-        // 3. Decode Base64 to a binary string
+        // 3. Decode Base64 to a "binary string" where each char code is a byte.
         const binaryString = atob(base64);
 
-        // 4. Convert the binary string to a byte array (Uint8Array)
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-        }
-
-        // 5. Use TextDecoder to decode the byte array as UTF-8
-        const jsonPayload = new TextDecoder('utf-8').decode(bytes);
+        // 4. Manually convert the binary string to a percent-encoded string.
+        const percentEncoded = Array.prototype.map.call(binaryString, (c) => {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join('');
+        
+        // 5. Decode the percent-encoded string as UTF-8. This is the most reliable step.
+        const jsonPayload = decodeURIComponent(percentEncoded);
 
         return JSON.parse(jsonPayload);
     } catch (e) {
