@@ -13,6 +13,8 @@ import { LoginModal } from './components/LoginModal';
 import { initializeAi } from './services/geminiService';
 import type { ViewType, User } from './types';
 import { KnowledgeBase } from './components/KnowledgeBase';
+import { LearningProfile } from './components/LearningProfile';
+import { ParentDashboard } from './components/ParentDashboard';
 
 declare const google: any;
 
@@ -188,7 +190,7 @@ const App: React.FC = () => {
     if (view !== 'mock-test' && view !== 'knowledge-base') {
         setSelectedSubject(null); // Clear subject when navigating away
     }
-    const protectedViews: ViewType[] = ['mock-test', 'chatbot', 'planner', 'knowledge-base'];
+    const protectedViews: ViewType[] = ['mock-test', 'chatbot', 'planner', 'knowledge-base', 'learning-profile', 'parent-dashboard'];
     if (protectedViews.includes(view)) {
       requireAuthAndApi(() => setCurrentView(view));
     } else {
@@ -224,6 +226,10 @@ const App: React.FC = () => {
         return <StudyPlanner />;
       case 'community':
         return <Community />;
+      case 'learning-profile':
+        return <LearningProfile />;
+      case 'parent-dashboard':
+        return <ParentDashboard />;
       default:
         return <Dashboard onStartTest={handleStartTest} onViewKnowledge={handleViewKnowledge} />;
     }
