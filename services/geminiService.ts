@@ -1,15 +1,27 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { Question } from '../types';
 
-const API_KEY = process.env.API_KEY;
-
 let ai: GoogleGenAI | null = null;
 
-if (API_KEY) {
-  ai = new GoogleGenAI({ apiKey: API_KEY });
-} else {
-  console.warn("Luyện Thi Vào 10 AI Warning: The API_KEY environment variable is not set. AI features will be disabled. For this to work on a platform like Vercel, you need a build step to replace 'process.env.API_KEY' or use a backend function to handle API calls securely.");
-}
+/**
+ * Initializes the GoogleGenAI client with the user-provided API key.
+ * @param apiKey The API key provided by the user.
+ */
+export const initializeAi = (apiKey: string): void => {
+  if (apiKey) {
+    ai = new GoogleGenAI({ apiKey });
+  } else {
+    console.warn("Luyện Thi Vào 10 AI Warning: An empty API key was provided.");
+    ai = null;
+  }
+};
+
+/**
+ * Checks if the AI client has been initialized.
+ * @returns {boolean} True if initialized, false otherwise.
+ */
+export const isAiInitialized = (): boolean => ai !== null;
+
 
 const mockTestSchema = {
     type: Type.OBJECT,
@@ -45,18 +57,18 @@ const mockTestSchema = {
     required: ["questions"],
 };
 
-const missingApiKeyError = (): Question => {
-    return {
+const missingApiKeyError = (): Question[] => {
+    return [{
         question: "Lỗi Cấu Hình Dịch Vụ AI",
         options: [],
         correctAnswer: "",
-        explanation: "Không thể kết nối đến dịch vụ AI vì API Key chưa được cấu hình. Vui lòng liên hệ quản trị viên."
-    };
+        explanation: "Vui lòng nhập API Key của bạn để sử dụng các tính năng AI. Bạn có thể nhấn vào biểu tượng chìa khóa ở góc trên bên phải để cài đặt."
+    }];
 };
 
 export const generateMockTest = async (subject: string): Promise<Question[]> => {
-    if (!ai) {
-        return [missingApiKeyError()];
+    if (!isAiInitialized() || !ai) {
+        return missingApiKeyError();
     }
     try {
         const response = await ai.models.generateContent({
@@ -85,8 +97,8 @@ export const generateMockTest = async (subject: string): Promise<Question[]> => 
 
 
 export const getChatbotResponse = async (history: string, userMessage: string): Promise<string> => {
-    if (!ai) {
-        return "Xin lỗi, dịch vụ AI hiện không khả dụng do lỗi cấu hình. Vui lòng thử lại sau.";
+    if (!isAiInitialized() || !ai) {
+        return "Xin lỗi, dịch vụ AI hiện không khả dụng. Vui lòng kiểm tra lại cài đặt API Key của bạn.";
     }
     try {
          const response = await ai.models.generateContent({
@@ -107,8 +119,8 @@ export const getChatbotResponse = async (history: string, userMessage: string): 
 };
 
 export const generateStudyPlan = async (strengths: string[], weaknesses: string[]): Promise<string> => {
-    if (!ai) {
-        return "## Kế hoạch học tập\n\nXin lỗi, không thể tạo kế hoạch học tập do dịch vụ AI chưa được cấu hình. Vui lòng kiểm tra lại.";
+    if (!isAiInitialized() || !ai) {
+        return "## Kế hoạch học tập\n\nXin lỗi, không thể tạo kế hoạch học tập do dịch vụ AI chưa được cấu hình. Vui lòng kiểm tra lại cài đặt API Key của bạn.";
     }
     const prompt = `
         Create a smart, 1-week study plan for a Vietnamese student preparing for their 10th-grade entrance exam.
