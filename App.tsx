@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
 import { MockTest } from './components/MockTest';
@@ -22,6 +22,8 @@ const App: React.FC = () => {
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+  const pendingActionRef = useRef(pendingAction);
+  pendingActionRef.current = pendingAction;
 
   useEffect(() => {
     const savedApiKey = localStorage.getItem('gemini-api-key');
@@ -46,15 +48,16 @@ const App: React.FC = () => {
       };
       setUser(newUser);
       setShowLoginModal(false);
-      if (pendingAction) {
-        pendingAction();
+      if (pendingActionRef.current) {
+        pendingActionRef.current();
         setPendingAction(null);
       }
     } catch (e) {
       console.error("Error decoding JWT", e);
     }
-  }, [pendingAction]);
+  }, [setPendingAction, setUser]);
 
+  // Effect for GSI initialization, runs once.
   useEffect(() => {
     if (typeof google === 'undefined') {
       return;
@@ -64,17 +67,22 @@ const App: React.FC = () => {
       client_id: '320099579191-f331p75bb1ghei0e8hkl1sv63psddhuo.apps.googleusercontent.com',
       callback: handleGoogleSignIn,
     });
+  }, [handleGoogleSignIn]);
 
-    if (showLoginModal) {
+  // Effect for rendering the button when the modal is visible.
+  useEffect(() => {
+    if (showLoginModal && typeof google !== 'undefined') {
        const GSIbuttonContainer = document.getElementById('google-signin-button-container');
        if(GSIbuttonContainer) {
+          // GSI library can be sensitive to re-rendering. Clear the container before rendering.
+          GSIbuttonContainer.innerHTML = '';
           google.accounts.id.renderButton(
             GSIbuttonContainer,
             { theme: 'outline', size: 'large', width: '250', type: 'standard' }
           );
        }
     }
-  }, [showLoginModal, handleGoogleSignIn]);
+  }, [showLoginModal]);
 
   const handleApiKeySubmit = (newApiKey: string) => {
     setApiKey(newApiKey);
