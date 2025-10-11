@@ -6,7 +6,6 @@ import { AIChatbot } from './components/AIChatbot';
 import { StudyPlanner } from './components/StudyPlanner';
 import { Community } from './components/Community';
 import { Header } from './components/Header';
-import { HeaderSkeleton } from './components/HeaderSkeleton';
 import { DashboardSkeleton } from './components/DashboardSkeleton';
 import { ApiKeyModal } from './components/ApiKeyModal';
 import { LoginModal } from './components/LoginModal';
@@ -169,20 +168,6 @@ const App: React.FC = () => {
     setCurrentView('dashboard');
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans">
-        <Sidebar currentView={'dashboard'} setView={() => {}} />
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <HeaderSkeleton />
-          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 md:p-8">
-            <DashboardSkeleton />
-          </main>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       {showLoginModal && <LoginModal onDismiss={cancelAndGoHome} />}
@@ -195,9 +180,15 @@ const App: React.FC = () => {
       <div className="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans">
         <Sidebar currentView={currentView} setView={handleSetView} />
         <div className="flex-1 flex flex-col overflow-hidden">
-          <Header user={user} onSignIn={handleSignIn} onApiKeyClick={() => requireAuthAndApi(() => setShowApiKeyModal(true))} onSignOut={handleSignOut} />
+           <Header 
+              user={user} 
+              isLoading={isLoading}
+              onSignIn={handleSignIn} 
+              onApiKeyClick={() => requireAuthAndApi(() => setShowApiKeyModal(true))} 
+              onSignOut={handleSignOut} 
+            />
           <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 md:p-8">
-            {renderContent()}
+            {isLoading ? <DashboardSkeleton /> : renderContent()}
           </main>
         </div>
       </div>
