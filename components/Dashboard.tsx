@@ -6,6 +6,7 @@ import { MOCK_PROGRESS_DATA } from '../constants';
 
 interface DashboardProps {
     onStartTest: (subject: string) => void;
+    onViewKnowledge: (subject: string) => void;
 }
 
 const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode }> = ({ title, value, icon }) => (
@@ -24,17 +25,25 @@ const SubjectCard: React.FC<{
   subject: string;
   icon: React.ReactNode;
   gradient: string;
-  onClick: () => void;
-}> = ({ subject, icon, gradient, onClick }) => (
-    <button onClick={onClick} className={`relative p-6 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all text-left w-full group text-white overflow-hidden ${gradient}`}>
-        <div className="relative z-10">
-            <div className="mb-4">
+  onStartTest: () => void;
+  onViewKnowledge: () => void;
+}> = ({ subject, icon, gradient, onStartTest, onViewKnowledge }) => (
+    <div className={`relative p-4 rounded-2xl shadow-lg text-left w-full text-white overflow-hidden ${gradient} flex flex-col justify-between min-h-[160px]`}>
+        <div>
+            <div className="mb-2">
                 {icon}
             </div>
-            <p className="font-bold text-xl">{subject}</p>
-            <p className="text-sm opacity-80">Luyện đề thi ngay</p>
+            <p className="font-bold text-lg">{subject}</p>
         </div>
-    </button>
+        <div className="grid grid-cols-2 gap-2 mt-3">
+             <button onClick={onViewKnowledge} className="text-center text-xs font-bold py-2 px-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors backdrop-blur-sm">
+                Kiến thức
+            </button>
+            <button onClick={onStartTest} className="text-center text-xs font-bold py-2 px-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors backdrop-blur-sm">
+                Luyện thi
+            </button>
+        </div>
+    </div>
 );
 
 
@@ -102,9 +111,9 @@ const SuggestionsCard: React.FC = () => {
 };
 
 
-export const Dashboard: React.FC<DashboardProps> = ({ onStartTest }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ onStartTest, onViewKnowledge }) => {
     const statIconClasses = "h-6 w-6 text-blue-600 dark:text-blue-400";
-    const subjectIconClasses = "h-10 w-10 opacity-80";
+    const subjectIconClasses = "h-8 w-8 opacity-80";
 
     const subjects = [
         { name: 'Toán', icon: <svg xmlns="http://www.w3.org/2000/svg" className={subjectIconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>, gradient: 'bg-gradient-to-br from-blue-500 to-blue-600' },
@@ -122,7 +131,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onStartTest }) => {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Chọn môn để luyện thi</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Lựa chọn học phần</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
                     {subjects.map(subject => (
                         <SubjectCard
@@ -130,7 +139,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onStartTest }) => {
                             subject={subject.name}
                             icon={subject.icon}
                             gradient={subject.gradient}
-                            onClick={() => onStartTest(subject.name)}
+                            onStartTest={() => onStartTest(subject.name)}
+                            onViewKnowledge={() => onViewKnowledge(subject.name)}
                         />
                     ))}
                 </div>
