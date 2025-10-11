@@ -1,4 +1,4 @@
-export type ViewType = 'dashboard' | 'mock-test' | 'chatbot' | 'planner' | 'community' | 'knowledge-base';
+export type ViewType = 'dashboard' | 'mock-test' | 'chatbot' | 'planner' | 'community' | 'knowledge-base' | 'learning-profile' | 'parent-dashboard';
 
 export interface User {
   id: string;
@@ -24,4 +24,11 @@ export interface MockQuestion {
 export interface ProgressData {
   name: string;
   'Điểm': number;
+}
+
+export interface LearningProfile {
+  strengths: { subject: string; topic: string }[];
+  weaknesses: { subject: string; topic: string }[];
+  recommendations: string[];
+  motivationalQuote: string;
 }
