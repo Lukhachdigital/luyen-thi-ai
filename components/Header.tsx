@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { MOCK_USER } from '../constants';
 import type { User } from '../types';
 
 interface HeaderProps {
   user: User | null;
+  onSignIn: () => void;
   onApiKeyClick: () => void;
   onSignOut: () => void;
 }
@@ -39,12 +39,12 @@ const UserProfile: React.FC<{ user: User; onSignOut: () => void }> = ({ user, on
 };
 
 
-export const Header: React.FC<HeaderProps> = ({ user, onApiKeyClick, onSignOut }) => {
+export const Header: React.FC<HeaderProps> = ({ user, onSignIn, onApiKeyClick, onSignOut }) => {
   return (
     <header className="flex items-center justify-between h-16 px-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center">
         <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
-            Chào mừng trở lại, {user ? user.name : MOCK_USER.name}!
+            Chào mừng trở lại, {user ? user.name : 'bạn'}!
             <span className="hidden sm:inline"> Cùng chinh phục mục tiêu hôm nay nhé!</span>
         </h1>
       </div>
@@ -68,13 +68,12 @@ export const Header: React.FC<HeaderProps> = ({ user, onApiKeyClick, onSignOut }
         {user ? (
             <UserProfile user={user} onSignOut={onSignOut} />
         ) : (
-            <div className="flex items-center">
-               <span className="hidden sm:inline-block text-right mr-3">
-                 <span className="block text-sm font-medium text-gray-700 dark:text-gray-200">{MOCK_USER.name}</span>
-                 <span className="block text-xs text-gray-500 dark:text-gray-400">Học sinh</span>
-               </span>
-               <img className="h-10 w-10 rounded-full object-cover" src={MOCK_USER.avatarUrl} alt="Guest avatar" />
-            </div>
+            <button
+              onClick={onSignIn}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900 focus:ring-blue-500"
+            >
+              Đăng nhập
+            </button>
         )}
       </div>
     </header>
