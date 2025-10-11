@@ -25,7 +25,18 @@ const App: React.FC = () => {
   const pendingActionRef = useRef(pendingAction);
   pendingActionRef.current = pendingAction;
 
+  // Effect to load persisted user and API key from localStorage on initial load
   useEffect(() => {
+    const savedUserJson = localStorage.getItem('app-user');
+    if (savedUserJson) {
+      try {
+        setUser(JSON.parse(savedUserJson));
+      } catch {
+        console.error("Failed to parse user from localStorage.");
+        localStorage.removeItem('app-user');
+      }
+    }
+
     const savedApiKey = localStorage.getItem('gemini-api-key');
     if (savedApiKey) {
       setApiKey(savedApiKey);
@@ -35,6 +46,16 @@ const App: React.FC = () => {
 
   const handleSignOut = () => {
     setUser(null);
+    localStorage.removeItem('app-user');
+    // Prevent Google One-Tap from automatically signing the user back in.
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+        google.accounts.id.disableAutoSelect();
+    }
+  };
+  
+  const handleSignIn = () => {
+    setPendingAction(null); // Clear pending actions for a direct sign-in attempt
+    setShowLoginModal(true);
   };
 
   const handleGoogleSignIn = useCallback((credentialResponse: any) => {
@@ -47,6 +68,7 @@ const App: React.FC = () => {
         avatarUrl: decoded.picture
       };
       setUser(newUser);
+      localStorage.setItem('app-user', JSON.stringify(newUser)); // Persist user
       setShowLoginModal(false);
       if (pendingActionRef.current) {
         pendingActionRef.current();
@@ -154,7 +176,7 @@ const App: React.FC = () => {
       <div className="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans">
         <Sidebar currentView={currentView} setView={handleSetView} />
         <div className="flex-1 flex flex-col overflow-hidden">
-          <Header user={user} onApiKeyClick={() => requireAuthAndApi(() => setShowApiKeyModal(true))} onSignOut={handleSignOut} />
+          <Header user={user} onSignIn={handleSignIn} onApiKeyClick={() => requireAuthAndApi(() => setShowApiKeyModal(true))} onSignOut={handleSignOut} />
           <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 md:p-8">
             {renderContent()}
           </main>
