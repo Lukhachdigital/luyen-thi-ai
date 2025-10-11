@@ -1,10 +1,11 @@
+
 import React from 'react';
 import type { ViewType } from '../types';
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area } from 'recharts';
 import { MOCK_PROGRESS_DATA } from '../constants';
 
 interface DashboardProps {
-    setView: (view: ViewType) => void;
+    onStartTest: (subject: string) => void;
 }
 
 const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode }> = ({ title, value, icon }) => (
@@ -101,7 +102,7 @@ const SuggestionsCard: React.FC = () => {
 };
 
 
-export const Dashboard: React.FC<DashboardProps> = ({ setView }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ onStartTest }) => {
     const statIconClasses = "h-6 w-6 text-blue-600 dark:text-blue-400";
     const subjectIconClasses = "h-10 w-10 opacity-80";
 
@@ -127,7 +128,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ setView }) => {
                             subject={subject.name}
                             icon={subject.icon}
                             gradient={subject.gradient}
-                            onClick={() => setView('mock-test')}
+                            onClick={() => onStartTest(subject.name)}
                         />
                     ))}
                 </div>
