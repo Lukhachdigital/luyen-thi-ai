@@ -15,32 +15,27 @@ import type { ViewType, User } from './types';
 
 declare const google: any;
 
-// Helper function to correctly decode JWT payloads with UTF-8 characters
+// A robust, standard-compliant function to decode JWT payloads.
+// This method correctly handles UTF-8 characters (like Vietnamese names)
+// by converting the base64 string to a percent-encoded string, which is
+// then reliably decoded by the browser's native `decodeURIComponent`.
+// This definitively solves the character encoding (mojibake) issue.
 const decodeJwtResponse = (token: string): any => {
     try {
         const base64Url = token.split('.')[1];
         if (!base64Url) return null;
 
-        let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        // The JWT payload is Base64Url encoded, which might lack padding.
-        // `atob` can fail on strings with incorrect padding, so we add it back.
-        const pad = base64.length % 4;
-        if (pad) {
-            if (pad === 2) base64 += '==';
-            else if (pad === 3) base64 += '=';
-        }
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                })
+                .join('')
+        );
 
-        const binaryString = atob(base64);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-        }
-
-        // Use TextDecoder to correctly handle UTF-8 characters.
-        // This is the modern and robust way to decode binary data to a string.
-        const decodedJson = new TextDecoder('utf-8').decode(bytes);
-        
-        return JSON.parse(decodedJson);
+        return JSON.parse(jsonPayload);
     } catch (e) {
         console.error("Failed to decode JWT", e);
         return null;
