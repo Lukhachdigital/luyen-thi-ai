@@ -16,9 +16,24 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess, onDismis
       // onAuthStateChanged in App.tsx will see the new user.
       // Call onLoginSuccess to immediately close the modal.
       onLoginSuccess();
-    } catch (error) {
-      console.error("Google sign-in error", error);
-      alert('Đã có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.');
+    } catch (error: any) {
+      console.error("Lỗi đăng nhập Google:", error);
+      let userMessage = "Đã có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.";
+
+      // Check for specific Firebase Auth error codes for better user guidance
+      switch (error.code) {
+        case 'auth/operation-not-allowed':
+          userMessage = "Lỗi cấu hình: Phương thức đăng nhập Google chưa được bật.\n\nVui lòng vào Firebase Console -> Authentication -> Sign-in method và bật 'Google'.";
+          break;
+        case 'auth/unauthorized-domain':
+          userMessage = `Lỗi cấu hình: Tên miền của ứng dụng chưa được cấp phép.\n\nVui lòng vào Firebase Console -> Authentication -> Sign-in method, và thêm "${window.location.hostname}" vào danh sách 'Authorized domains'.`;
+          break;
+        default:
+          userMessage = `Lỗi đăng nhập.\n\n1. **QUAN TRỌNG NHẤT**: Kiểm tra lại cấu hình trong file 'db/firebase.ts' có chính xác chưa. Đây là nguyên nhân phổ biến nhất.\n2. Đảm bảo tên miền đã được thêm vào 'Authorized domains' trong Firebase Authentication.\n\nMã lỗi: ${error.code}\nChi tiết: ${error.message}`;
+          break;
+      }
+      
+      alert(userMessage);
     }
   };
 
