@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { labelOf, SYLLABUS_TOPICS } from "../profile/logic";
 import { Post, Comment } from "../community/communityTypes";
@@ -40,7 +41,7 @@ function timeAgo(ms: number) {
 }
 
 interface CommunityProps {
-    user: User | null;
+    user: User;
 }
 
 export const Community: React.FC<CommunityProps> = ({ user }) => {
@@ -72,7 +73,6 @@ export const Community: React.FC<CommunityProps> = ({ user }) => {
 
   // Create Post
   const createPost = () => {
-    if (!user) return alert("Vui lòng đăng nhập để tạo bài viết.");
     if (!newTitle.trim()) return alert("Vui lòng nhập tiêu đề.");
     
     const now = Date.now();
@@ -96,7 +96,6 @@ export const Community: React.FC<CommunityProps> = ({ user }) => {
 
   // Toggle Like
   const toggleLike = (postId: string) => {
-    if (!user) return alert("Vui lòng đăng nhập để thích bài viết.");
     const allLikes = getLikes();
     const postLikes = allLikes[postId] || [];
     const userIndex = postLikes.indexOf(user.id);
@@ -138,7 +137,6 @@ export const Community: React.FC<CommunityProps> = ({ user }) => {
 
   // Submit Reply
   const submitReply = (postId: string) => {
-    if (!user) return alert("Vui lòng đăng nhập để trả lời.");
     if (!replyText.trim()) return;
 
     const now = Date.now();
@@ -227,7 +225,7 @@ export const Community: React.FC<CommunityProps> = ({ user }) => {
               <h2 className="mt-3 font-bold text-lg">{p.title}</h2>
 
               <div className="mt-3 flex items-center gap-3 text-sm">
-                <button onClick={()=>toggleLike(p.id)} className={`px-2 py-1 rounded-lg border flex items-center gap-1 transition-colors ${likes[p.id]?.includes(user?.id || '') ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>👍 {p.likes||0}</button>
+                <button onClick={()=>toggleLike(p.id)} className={`px-2 py-1 rounded-lg border flex items-center gap-1 transition-colors ${likes[p.id]?.includes(user.id) ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>👍 {p.likes||0}</button>
                 <div className="opacity-70">💬 {p.replies||0} trả lời</div>
                 {user?.role === "teacher" && (
                   <>
