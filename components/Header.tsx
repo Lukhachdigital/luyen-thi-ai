@@ -3,14 +3,12 @@ import React, { useState } from 'react';
 import type { User } from '../types';
 
 interface HeaderProps {
-  user: User | null;
+  user: User;
   apiKey: string | null;
   onApiKeyClick: () => void;
-  onSignOut: () => void;
-  onLoginClick: () => void;
 }
 
-const UserProfile: React.FC<{ user: User; onSignOut: () => void }> = ({ user, onSignOut }) => {
+const UserProfile: React.FC<{ user: User }> = ({ user }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     return (
@@ -28,13 +26,7 @@ const UserProfile: React.FC<{ user: User; onSignOut: () => void }> = ({ user, on
                     onMouseLeave={() => setDropdownOpen(false)}
                 >
                     <div className="px-4 py-2 text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</div>
-                    <button
-                        onClick={onSignOut}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        role="menuitem"
-                    >
-                        Đăng xuất
-                    </button>
+                    {/* Nút đăng xuất đã được gỡ bỏ */}
                 </div>
             )}
         </div>
@@ -42,13 +34,13 @@ const UserProfile: React.FC<{ user: User; onSignOut: () => void }> = ({ user, on
 };
 
 
-export const Header: React.FC<HeaderProps> = ({ user, apiKey, onApiKeyClick, onSignOut, onLoginClick }) => {
+export const Header: React.FC<HeaderProps> = ({ user, apiKey, onApiKeyClick }) => {
     const hasApiKey = !!apiKey;
   return (
     <header className="flex items-center justify-between h-16 px-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
       <div className="flex items-center">
         <div className="text-lg font-semibold text-gray-800 dark:text-white">
-            {user ? `Chào mừng trở lại, ${user.name}!` : 'Chào mừng bạn!'}
+            {`Chào mừng trở lại, ${user.name}!`}
             <span className="hidden sm:inline"> Cùng chinh phục mục tiêu hôm nay nhé!</span>
         </div>
       </div>
@@ -79,16 +71,7 @@ export const Header: React.FC<HeaderProps> = ({ user, apiKey, onApiKeyClick, onS
             )}
             <span className="hidden sm:inline">{hasApiKey ? 'API KEY Đã Lưu' : 'Nhập API KEY'}</span>
         </button>
-        {user ? (
-            <UserProfile user={user} onSignOut={onSignOut} />
-        ) : (
-             <button
-                onClick={onLoginClick}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 focus:ring-blue-500"
-            >
-                Đăng nhập
-            </button>
-        )}
+        <UserProfile user={user} />
       </div>
     </header>
   );
