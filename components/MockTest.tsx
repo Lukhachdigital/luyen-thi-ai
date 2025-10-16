@@ -170,7 +170,7 @@ function LibraryPanel() {
             <div className="mt-4 flex-grow flex items-end">
               <button className="w-full px-3 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors" onClick={() => setPlaying(s)}>Làm ngay</button>
             </div>
-          </li>
+          </div>
         ))}
          {filtered.length === 0 && <p className="text-gray-500 dark:text-gray-400 text-center py-8 col-span-full">Không tìm thấy bộ đề nào phù hợp.</p>}
       </div>
