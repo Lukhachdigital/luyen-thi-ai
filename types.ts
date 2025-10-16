@@ -1,10 +1,11 @@
-export type ViewType = 'dashboard' | 'mock-test' | 'chatbot' | 'planner' | 'community' | 'knowledge-base' | 'learning-profile' | 'parent-dashboard';
+export type ViewType = 'dashboard' | 'mock-test' | 'chatbot' | 'planner' | 'community' | 'knowledge-base' | 'learning-profile' | 'parent-dashboard' | 'study-materials' | 'teacher-dashboard' | 'today-plan' | 'daily-reminder';
 
 export interface User {
   id: string;
   name: string;
   email: string;
   avatarUrl: string;
+  role?: 'student' | 'teacher';
 }
 
 export interface ChatMessage {
@@ -31,4 +32,12 @@ export interface LearningProfile {
   weaknesses: { subject: string; topic: string }[];
   recommendations: string[];
   motivationalQuote: string;
+}
+
+export interface StudyMaterial {
+  id: string;
+  name: string;
+  type: 'pdf' | 'docx' | 'image' | 'other';
+  size: string;
+  uploadedAt: string;
 }

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 
 interface ApiKeyModalProps {
+  currentApiKey: string | null;
   onKeySubmit: (apiKey: string) => void;
   onDismiss: () => void;
 }
 
-export const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ onKeySubmit, onDismiss }) => {
+export const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ currentApiKey, onKeySubmit, onDismiss }) => {
   const [apiKey, setApiKey] = useState('');
+  const hasCurrentKey = !!currentApiKey;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,9 +22,13 @@ export const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ onKeySubmit, onDismiss
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md transform transition-all">
         <div className="p-6">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Cài đặt API Key</h3>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {hasCurrentKey ? 'Cập nhật API Key' : 'Cài đặt API Key'}
+            </h3>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              Để sử dụng các tính năng AI, vui lòng nhập API Key của Google Gemini.
+              {hasCurrentKey 
+                ? 'Bạn có thể cập nhật API Key mới tại đây. Khóa cũ sẽ bị ghi đè.' 
+                : 'Để sử dụng các tính năng AI, vui lòng nhập API Key của Google Gemini.'}
             </p>
           </div>
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -37,7 +43,7 @@ export const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ onKeySubmit, onDismiss
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-lg text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Nhập API Key của bạn tại đây"
+                placeholder={hasCurrentKey ? 'Nhập API Key mới' : 'Nhập API Key của bạn tại đây'}
                 autoComplete="off"
               />
             </div>
@@ -53,7 +59,7 @@ export const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ onKeySubmit, onDismiss
                 className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:text-sm disabled:opacity-50"
                 disabled={!apiKey.trim()}
               >
-                Lưu và Tiếp tục
+                {hasCurrentKey ? 'Cập nhật' : 'Lưu và Tiếp tục'}
               </button>
               <button
                 type="button"

@@ -1,5 +1,5 @@
 {
-  "name": "luyện-thi-vào-10-ai",
+  "name": "copy-of-ok-luyện-thi-vào-10-ai",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,7 +12,10 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "@google/genai": "^1.24.0",
-    "recharts": "^3.2.1"
+    "recharts": "^3.2.1",
+    "jspdf": "^2.5.1",
+    "firebase": "^12.4.0",
+    "firebase-admin": "^13.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

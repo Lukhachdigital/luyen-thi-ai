@@ -1,6 +1,7 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { MOCK_PROGRESS_DATA } from '../constants';
-import type { LearningProfile } from '../types';
+import type { LearningProfile, MockQuestion } from '../types';
 
 let ai: GoogleGenAI;
 
@@ -37,6 +38,49 @@ export const getChatbotResponse = async (history: string, prompt: string): Promi
   }
 };
 
+
+export const getKhoiKhoaResponse = async (
+  systemPrompt: string,
+  question: string,
+  mode: "fast" | "detail",
+  context?: string
+): Promise<string> => {
+  if (!ai) {
+    return "Lỗi: Gemini AI chưa được khởi tạo. Vui lòng cài đặt API Key.";
+  }
+
+  const tone =
+    mode === "fast"
+      ? "Trả lời NGẮN GỌN – chỉ công thức/chìa khoá và 3–4 bước chính."
+      : "Trả lời CHI TIẾT – có bước giải/luận điểm rõ ràng, giải thích ngắn, nêu lỗi thường gặp.";
+
+  let fullSystemPrompt = `${systemPrompt}\n${tone}`;
+
+  if (context?.trim()) {
+    fullSystemPrompt += `\nTư liệu tham khảo (RAG từ Kho tài liệu học tập, có thể không hoàn hảo):\n---\n${context.slice(
+      0,
+      4000
+    )}\n---\nNếu tư liệu phù hợp thì ưu tiên dùng; nếu không, dựa trên kiến thức chuẩn chương trình 9→10.`;
+  }
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      config: {
+        systemInstruction: fullSystemPrompt,
+        temperature: 0.2,
+      },
+      contents: question,
+    });
+    
+    return response.text;
+  } catch (error) {
+    console.error("Error getting Khoi Khoa response:", error);
+    return "Rất tiếc, đã có lỗi xảy ra khi kết nối với AI. Vui lòng thử lại sau.";
+  }
+};
+
+
 export const generateStudyPlan = async (details: {
   subject: string;
   duration: number;
@@ -60,6 +104,62 @@ Vui lòng trình bày dưới dạng markdown.`;
   } catch (error) {
     console.error("Error generating study plan:", error);
     return "Rất tiếc, đã có lỗi xảy ra khi tạo kế hoạch học tập. Vui lòng thử lại sau.";
+  }
+};
+
+export const generateMockTest = async (subject: string, numQuestions: number, topic?: string | null): Promise<MockQuestion[]> => {
+  if (!ai) {
+    throw new Error("Lỗi: Gemini AI chưa được khởi tạo. Vui lòng cài đặt API Key.");
+  }
+  
+  const topicInstruction = topic ? `, tập trung sâu vào chủ đề "${topic}"` : '';
+
+  const prompt = `Tạo một bài kiểm tra trắc nghiệm gồm ${numQuestions} câu hỏi cho môn học "${subject}"${topicInstruction} dành cho học sinh lớp 9 tại Việt Nam ôn thi vào lớp 10.
+  Mỗi câu hỏi phải có chính xác 4 lựa chọn trả lời và chỉ một đáp án đúng.
+  Cung cấp một giải thích ngắn gọn, rõ ràng cho đáp án đúng của mỗi câu hỏi.
+  Độ khó của câu hỏi nên ở mức trung bình - khá.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          description: `Danh sách ${numQuestions} câu hỏi trắc nghiệm.`,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              id: { type: Type.NUMBER, description: "ID của câu hỏi, bắt đầu từ 1." },
+              question: { type: Type.STRING, description: "Nội dung câu hỏi." },
+              options: {
+                type: Type.ARRAY,
+                description: "Danh sách 4 lựa chọn trả lời.",
+                items: { type: Type.STRING }
+              },
+              answer: { type: Type.STRING, description: "Đáp án đúng, phải khớp chính xác với một trong các lựa chọn." },
+              explanation: { type: Type.STRING, description: "Giải thích ngắn gọn cho đáp án đúng." }
+            },
+            required: ["id", "question", "options", "answer", "explanation"]
+          }
+        }
+      }
+    });
+
+    const jsonText = response.text.trim();
+    const testData: MockQuestion[] = JSON.parse(jsonText);
+
+    if (!Array.isArray(testData) || testData.length === 0) {
+      console.error("AI returned invalid data format for mock test.");
+      return [];
+    }
+
+    return testData;
+  } catch (error) {
+    console.error("Error generating mock test:", error);
+    return [];
   }
 };
 
