@@ -26,7 +26,7 @@ const UserProfile: React.FC<{ user: User }> = ({ user }) => {
                     onMouseLeave={() => setDropdownOpen(false)}
                 >
                     <div className="px-4 py-2 text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</div>
-                    {/* Nút đăng xuất đã được gỡ bỏ */}
+                    {/* Sign out button removed */}
                 </div>
             )}
         </div>
