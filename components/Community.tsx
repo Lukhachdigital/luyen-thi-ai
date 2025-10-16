@@ -225,7 +225,7 @@ export const Community: React.FC<CommunityProps> = ({ user }) => {
               <h2 className="mt-3 font-bold text-lg">{p.title}</h2>
 
               <div className="mt-3 flex items-center gap-3 text-sm">
-                <button onClick={()=>toggleLike(p.id)} className={`px-2 py-1 rounded-lg border flex items-center gap-1 transition-colors ${likes[p.id]?.includes(user.id) ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>👍 {p.likes||0}</button>
+                <button onClick={()=>toggleLike(p.id)} className={`px-2 py-1 rounded-lg border flex items-center gap-1 transition-colors ${likes[p.id]?.includes(user?.id || '') ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>👍 {p.likes||0}</button>
                 <div className="opacity-70">💬 {p.replies||0} trả lời</div>
                 {user?.role === "teacher" && (
                   <>
