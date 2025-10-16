@@ -3,14 +3,18 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 // QUAN TRỌNG: Vui lòng thay thế cấu hình Firebase của bạn ở đây.
-// Bạn có thể lấy toàn bộ đối tượng cấu hình này từ Firebase Console
-// trong phần Project Settings (Cài đặt dự án) > General (Chung).
 //
-// Google Client ID bạn cung cấp (320099579191-...apps.googleusercontent.com)
-// được dùng để cấu hình phương thức đăng nhập Google trong mục Authentication,
-// không phải để dán trực tiếp vào đây.
+// Hướng dẫn từng bước:
+// 1. Mở Firebase Console cho dự án của bạn.
+// 2. Đi đến mục "Authentication" -> "Sign-in method".
+// 3. Bật nhà cung cấp "Google".
+// 4. Trong phần "Web SDK configuration", dán "Web client ID" sau vào:
+//    320099579191-f331p75bb1ghei0e8hkl1sv63psddhuo.apps.googleusercontent.com
+// 5. Quay lại trang Project Settings (Cài đặt dự án) > General (Chung).
+// 6. Tìm và sao chép TOÀN BỘ đối tượng `firebaseConfig`.
+// 7. Dán toàn bộ đối tượng đó để thay thế cho `firebaseConfig` ở dưới đây.
 //
-// Hãy sao chép toàn bộ đối tượng `firebaseConfig` từ dự án của bạn và dán vào đây để ứng dụng hoạt động.
+// Việc này là BẮT BUỘC để chức năng đăng nhập hoạt động.
 const firebaseConfig = {
   apiKey: "AIzaSy... (Sao chép từ Firebase Console)",
   authDomain: "your-project-id.firebaseapp.com",
