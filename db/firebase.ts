@@ -1,29 +1,25 @@
+
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-// QUAN TRỌNG: Vui lòng thay thế cấu hình Firebase của bạn ở đây.
-//
-// Hướng dẫn từng bước:
-// 1. Mở Firebase Console cho dự án của bạn.
-// 2. Đi đến mục "Authentication" -> "Sign-in method".
-// 3. Bật nhà cung cấp "Google".
-// 4. Trong phần "Web SDK configuration", dán "Web client ID" sau vào:
-//    320099579191-f331p75bb1ghei0e8hkl1sv63psddhuo.apps.googleusercontent.com
-// 5. Quay lại trang Project Settings (Cài đặt dự án) > General (Chung).
-// 6. Tìm và sao chép TOÀN BỘ đối tượng `firebaseConfig`.
-// 7. Dán toàn bộ đối tượng đó để thay thế cho `firebaseConfig` ở dưới đây.
-//
-// Việc này là BẮT BUỘC để chức năng đăng nhập hoạt động.
+// QUAN TRỌNG: Chức năng đăng nhập và Firebase đã bị vô hiệu hóa trong phiên bản này.
+// Cấu hình dưới đây chỉ là một ví dụ và không hoạt động.
 const firebaseConfig = {
-  apiKey: "AIzaSy... (Sao chép từ Firebase Console)",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id"
+  apiKey: "REMOVED-AUTH-DISABLED",
+  authDomain: "REMOVED-AUTH-DISABLED",
+  projectId: "REMOVED-AUTH-DISABLED",
+  storageBucket: "REMOVED-AUTH-DISABLED",
+  messagingSenderId: "REMOVED-AUTH-DISABLED",
+  appId: "REMOVED-AUTH-DISABLED"
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+// Việc khởi tạo ứng dụng Firebase đã bị vô hiệu hóa.
+// const app = initializeApp(firebaseConfig);
+// export const db = getFirestore(app);
+// export const auth = getAuth(app);
+
+// Xuất các giá trị giả để tránh lỗi import ở các file khác.
+// Các chức năng phụ thuộc vào Firebase sẽ không hoạt động.
+export const db = null as any;
+export const auth = null as any;
