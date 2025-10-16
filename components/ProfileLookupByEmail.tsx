@@ -1,8 +1,22 @@
-import React, { useState } from "react";
-import type { Firestore } from "firebase/firestore";
-import { getProfileByEmail } from "../lib/userProfile";
 
-export const ProfileLookupByEmail: React.FC<{ db: Firestore }> = ({ db }) => {
+import React, { useState } from "react";
+
+const mockStudentProfile = {
+  id: "mock-student-id-123",
+  displayName: "Nguyễn Văn A",
+  email: "nguyenvana@example.com",
+  emailLower: "nguyenvana@example.com",
+  class: "9A2",
+  role: "student",
+  learningProfile: {
+    "Môn học": "Ngữ Văn",
+    "Điểm mạnh": "Phân tích tác phẩm thơ",
+    "Điểm yếu": "Viết đoạn văn nghị luận xã hội",
+    "Gợi ý": "Đọc thêm các bài văn mẫu và tự viết 2 đoạn mỗi tuần."
+  }
+};
+
+export const ProfileLookupByEmail: React.FC = () => {
   const [email, setEmail] = useState("");
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
@@ -14,14 +28,16 @@ export const ProfileLookupByEmail: React.FC<{ db: Firestore }> = ({ db }) => {
       return;
     }
     setErr(null); setProfile(null); setLoading(true);
-    try {
-      const p = await getProfileByEmail(db, email);
-      if (!p) setErr("Không tìm thấy hồ sơ theo email này.");
-      else setProfile(p);
-    } catch (e: any) {
-      console.error("Profile lookup error:", e);
-      setErr(e.message || "Lỗi tra cứu hồ sơ.");
-    } finally { setLoading(false); }
+
+    // Mock search logic
+    setTimeout(() => {
+      if (email.trim().toLowerCase() === mockStudentProfile.emailLower) {
+        setProfile(mockStudentProfile);
+      } else {
+        setErr("Không tìm thấy hồ sơ theo email này. (Thử: nguyenvana@example.com)");
+      }
+      setLoading(false);
+    }, 500);
   };
 
   return (
