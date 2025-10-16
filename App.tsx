@@ -18,15 +18,13 @@ import { TeacherDashboard } from './components/TeacherDashboard';
 import TodayPlan from './components/TodayPlan';
 import DailyReminder from './components/DailyReminder';
 
-// Người dùng khách mặc định vì chức năng đăng nhập đã bị loại bỏ
 const mockUser: User = {
-  id: 'local-user',
+  id: 'default-user-01',
   name: 'Học sinh',
-  email: 'hocsinh@example.com',
+  email: 'student@example.com',
   avatarUrl: `https://api.dicebear.com/8.x/initials/svg?seed=HS`,
   role: 'student'
 };
-
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
@@ -40,16 +38,17 @@ const App: React.FC = () => {
   
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
+
   useEffect(() => {
-    try {
-        const savedApiKey = localStorage.getItem('gemini-api-key');
-        if (savedApiKey) {
-            setApiKey(savedApiKey);
-            initializeAi(savedApiKey);
-        }
-    } catch (error) {
-        console.error("Failed to load API key from localStorage.", error);
-    }
+      try {
+          const savedApiKey = localStorage.getItem('gemini-api-key');
+          if (savedApiKey) {
+              setApiKey(savedApiKey);
+              initializeAi(savedApiKey);
+          }
+      } catch (error) {
+          console.error("Failed to load API key from localStorage.", error);
+      }
   }, []);
 
   const handleApiKeySubmit = (newApiKey: string) => {
@@ -64,9 +63,8 @@ const App: React.FC = () => {
   };
 
   const requireAuthAndApi = useCallback((action: () => void) => {
-    // Chỉ kiểm tra API key, không kiểm tra người dùng
     if (!apiKey) {
-        setPendingAction(() => action);
+        setPendingAction(() => action); // The pending action is the final step
         setShowApiKeyModal(true);
         return;
     }
@@ -145,7 +143,7 @@ const App: React.FC = () => {
     setPendingAction(null);
     setCurrentView('dashboard');
   }
-  
+
   return (
     <>
       {showApiKeyModal && (
