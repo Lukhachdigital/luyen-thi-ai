@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
 import { MockTest } from './components/MockTest';
@@ -8,7 +7,6 @@ import { AIChatbot } from './components/AIChatbot';
 import { StudyPlanner } from './components/StudyPlanner';
 import { Community } from './components/Community';
 import { Header } from './components/Header';
-import { DashboardSkeleton } from './components/DashboardSkeleton';
 import { ApiKeyModal } from './components/ApiKeyModal';
 import { initializeAi } from './services/geminiService';
 import type { ViewType, User } from './types';
@@ -19,9 +17,15 @@ import { StudyMaterials } from './components/StudyMaterials';
 import { TeacherDashboard } from './components/TeacherDashboard';
 import TodayPlan from './components/TodayPlan';
 import DailyReminder from './components/DailyReminder';
-import { LoginModal } from './components/LoginModal';
-import { db } from './db/firebase';
-import { ensureUserProfile } from './lib/userProfile';
+
+// Người dùng khách mặc định vì chức năng đăng nhập đã bị loại bỏ
+const mockUser: User = {
+  id: 'local-user',
+  name: 'Học sinh',
+  email: 'hocsinh@example.com',
+  avatarUrl: `https://api.dicebear.com/8.x/initials/svg?seed=HS`,
+  role: 'student'
+};
 
 
 const App: React.FC = () => {
@@ -29,55 +33,24 @@ const App: React.FC = () => {
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [user] = useState<User>(mockUser);
   const [apiKey, setApiKey] = useState<string | null>(null);
 
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        await ensureUserProfile(db);
-        const appUser: User = {
-          id: firebaseUser.uid,
-          name: firebaseUser.displayName || 'Học sinh',
-          email: firebaseUser.email || 'no-email@example.com',
-          avatarUrl: firebaseUser.photoURL || `https://api.dicebear.com/8.x/initials/svg?seed=${firebaseUser.displayName || 'HS'}`,
-          role: 'student'
-        };
-        setUser(appUser);
-        if (pendingAction) {
-          pendingAction();
-          setPendingAction(null);
+    try {
+        const savedApiKey = localStorage.getItem('gemini-api-key');
+        if (savedApiKey) {
+            setApiKey(savedApiKey);
+            initializeAi(savedApiKey);
         }
-      } else {
-        setUser(null);
-        setApiKey(null);
-        localStorage.removeItem('gemini-api-key');
-      }
-      setIsAuthLoading(false);
-    });
-    return () => unsubscribe();
-  }, [pendingAction]);
-
-  useEffect(() => {
-    if (user) {
-        try {
-            const savedApiKey = localStorage.getItem('gemini-api-key');
-            if (savedApiKey) {
-                setApiKey(savedApiKey);
-                initializeAi(savedApiKey);
-            }
-        } catch (error) {
-            console.error("Failed to load API key from localStorage.", error);
-        }
+    } catch (error) {
+        console.error("Failed to load API key from localStorage.", error);
     }
-  }, [user]);
+  }, []);
 
   const handleApiKeySubmit = (newApiKey: string) => {
     setApiKey(newApiKey);
@@ -91,20 +64,14 @@ const App: React.FC = () => {
   };
 
   const requireAuthAndApi = useCallback((action: () => void) => {
-    if (!user) {
-        // The pending action is to retry this whole check after login
-        setPendingAction(() => () => requireAuthAndApi(action));
-        setShowLoginModal(true);
-        return;
-    }
-    // At this point, user is logged in. Now check for API key.
+    // Chỉ kiểm tra API key, không kiểm tra người dùng
     if (!apiKey) {
-        setPendingAction(() => action); // The pending action is the final step
+        setPendingAction(() => action);
         setShowApiKeyModal(true);
         return;
     }
     action();
-  }, [apiKey, user]);
+  }, [apiKey]);
 
   const handleSetView = (view: ViewType) => {
     if (view !== 'mock-test' && view !== 'knowledge-base') {
@@ -140,12 +107,6 @@ const App: React.FC = () => {
         setSelectedSubject(subject);
         setCurrentView('knowledge-base');
     });
-  };
-
-  const handleSignOut = () => {
-    const auth = getAuth();
-    signOut(auth);
-    setCurrentView('dashboard');
   };
 
   const renderContent = () => {
@@ -185,28 +146,8 @@ const App: React.FC = () => {
     setCurrentView('dashboard');
   }
   
-  const cancelLoginAndGoHome = () => {
-      setShowLoginModal(false);
-      setPendingAction(null);
-      setCurrentView('dashboard');
-  }
-
-  if (isAuthLoading) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 md:p-8">
-        <DashboardSkeleton />
-      </div>
-    );
-  }
-
   return (
     <>
-      {showLoginModal && (
-          <LoginModal 
-            onLoginSuccess={() => setShowLoginModal(false)}
-            onDismiss={cancelLoginAndGoHome}
-          />
-      )}
       {showApiKeyModal && (
         <ApiKeyModal
           currentApiKey={apiKey}
@@ -221,8 +162,6 @@ const App: React.FC = () => {
               user={user} 
               apiKey={apiKey}
               onApiKeyClick={() => requireAuthAndApi(() => setShowApiKeyModal(true))} 
-              onSignOut={handleSignOut}
-              onLoginClick={() => setShowLoginModal(true)}
             />
           <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 md:p-8">
             {renderContent()}
